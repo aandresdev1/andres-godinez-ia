@@ -17,6 +17,95 @@
       This page requires JavaScript to display.
     </div>
   </noscript>
+  <script>
+    // Contact-form hook. Lives in window-level closures so it survives the
+    // bundler's `document.documentElement.replaceWith(...)`. Polls the new
+    // DOM for the rendered form, then takes over submit handling.
+    (function () {
+      var ENDPOINT = '/api/contact';
+      var hooked = false;
+      var intervalId = setInterval(function () {
+        if (hooked) return;
+        var form = document.querySelector('#contacto form');
+        if (!form) return;
+        hooked = true;
+        clearInterval(intervalId);
+        hookForm(form);
+      }, 150);
+      // Stop polling after ~30s if the form never shows up.
+      setTimeout(function () { clearInterval(intervalId); }, 30000);
+
+      function hookForm(form) {
+        form.setAttribute('novalidate', '');
+        // Honeypot — bots tend to fill every field they see.
+        var hp = document.createElement('input');
+        hp.type = 'text';
+        hp.name = '_hp';
+        hp.tabIndex = -1;
+        hp.autocomplete = 'off';
+        hp.setAttribute('aria-hidden', 'true');
+        hp.style.cssText = 'position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;';
+        form.appendChild(hp);
+
+        var btn = form.querySelector('button[type="submit"]');
+        var btnText = btn ? btn.textContent : '';
+
+        form.addEventListener('submit', function (ev) {
+          ev.preventDefault();
+          var data = {
+            nombre:  (form.elements['nombre']  || {}).value || '',
+            email:   (form.elements['email']   || {}).value || '',
+            empresa: (form.elements['empresa'] || {}).value || '',
+            mensaje: (form.elements['mensaje'] || {}).value || '',
+            _hp:     (form.elements['_hp']     || {}).value || ''
+          };
+          data.nombre = data.nombre.trim();
+          data.email = data.email.trim();
+          data.empresa = data.empresa.trim();
+          data.mensaje = data.mensaje.trim();
+
+          if (!data.nombre || !data.email || !data.mensaje) {
+            alert('Por favor completa nombre, email y mensaje.');
+            return;
+          }
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+            alert('Por favor revisa el correo.');
+            return;
+          }
+
+          if (btn) { btn.disabled = true; btn.textContent = 'Enviando…'; }
+
+          fetch(ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          })
+            .then(function (res) {
+              return res.json().then(function (j) { return { ok: res.ok, json: j }; });
+            })
+            .then(function (out) {
+              if (!out.ok) throw new Error((out.json && out.json.error) || 'Error al enviar');
+              showSuccess(form);
+            })
+            .catch(function (err) {
+              console.error('[form-hook] submit failed:', err);
+              alert((err && err.message) || 'No pudimos enviar el mensaje. Intenta de nuevo.');
+              if (btn) { btn.disabled = false; btn.textContent = btnText; }
+            });
+        });
+      }
+
+      function showSuccess(form) {
+        var wrap = document.createElement('div');
+        wrap.style.cssText = 'border-radius:16px;border:1px solid rgba(40,200,64,0.4);background:rgba(40,200,64,0.08);padding:40px 28px;text-align:center;';
+        wrap.innerHTML =
+          '<div style="font-size:40px;margin-bottom:14px;">✓</div>' +
+          '<h3 style="font-family:Sora,sans-serif;font-weight:600;font-size:22px;margin:0 0 8px;color:#ECECF1;">¡Mensaje enviado!</h3>' +
+          '<p style="font-size:15px;color:rgba(236,236,241,0.65);margin:0;">Gracias. Andres te contactará en menos de 24 horas.</p>';
+        form.replaceWith(wrap);
+      }
+    })();
+  </script>
 </head>
 <body>
   <div id="__bundler_thumbnail">

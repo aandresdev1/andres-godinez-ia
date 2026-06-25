@@ -80,7 +80,9 @@
         })
         .then(function (out) {
           if (!out.ok) throw new Error((out.json && out.json.error) || 'Error al enviar');
-          form.setAttribute('hidden', '');
+          // Inline style gana sobre la regla `.contact-form { display: flex }`
+          // del CSS, cosa que el atributo `hidden` no logra por especificidad.
+          form.style.display = 'none';
           if (success) success.removeAttribute('hidden');
         })
         .catch(function (err) {

@@ -1,8 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <meta charset="utf-8">
-  <title>Bundled Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Primary SEO -->
+  <title>Andres Godinez | Automatización con IA para PYMES y agencias</title>
+  <meta name="description" content="Automatización con IA para PYMES y agencias. Atiendo clientes 24/7, doy seguimiento a tus ventas y te devuelvo horas de tu semana. Diagnóstico gratis.">
+  <meta name="author" content="Andres Godinez">
+  <meta name="keywords" content="automatización con IA, inteligencia artificial para negocios, automatización PYMES, chatbots IA, n8n, agentes de IA, Andres Godinez">
+  <meta name="theme-color" content="#0a0805">
+  <link rel="canonical" href="https://aandresdev.com/">
+
+  <!-- Open Graph (Facebook, LinkedIn, WhatsApp, Discord, Telegram) -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://aandresdev.com/">
+  <meta property="og:title" content="Andres Godinez — Automatización con IA para tu negocio">
+  <meta property="og:description" content="Pongo la IA a trabajar por tu negocio: atiende clientes al instante, da seguimiento a cada venta y te devuelve horas de tu semana. Diagnóstico gratis.">
+  <meta property="og:image" content="https://aandresdev.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Andres Godinez — Automatización con IA">
+  <meta property="og:locale" content="es_ES">
+  <meta property="og:site_name" content="Andres Godinez">
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Andres Godinez — Automatización con IA">
+  <meta name="twitter:description" content="Pongo la IA a trabajar por tu negocio: atención 24/7, seguimiento de ventas y horas que recuperas para ti. Diagnóstico gratis.">
+  <meta name="twitter:image" content="https://aandresdev.com/og-image.png">
+
+  <!-- Favicon: inline SVG con la "a" del logotipo -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230a0805'/%3E%3Ctext x='50' y='78' font-family='system-ui,sans-serif' font-weight='900' font-size='86' text-anchor='middle' fill='%23F2A33C'%3Ea%3C/text%3E%3C/svg%3E">
+
+  <!-- JSON-LD: Person + ProfessionalService schema for richer SERP -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "Andres Godinez — Automatización con IA",
+    "description": "Automatización de procesos con inteligencia artificial para PYMES y agencias.",
+    "url": "https://aandresdev.com/",
+    "image": "https://aandresdev.com/og-image.png",
+    "areaServed": "Worldwide",
+    "founder": {
+      "@type": "Person",
+      "name": "Andres Godinez"
+    },
+    "sameAs": []
+  }
+  </script>
+
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #0a0805; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
@@ -23,6 +71,11 @@
     // DOM for the rendered form, then takes over submit handling.
     (function () {
       var ENDPOINT = '/api/contact';
+      // Preserve SEO state across the bundler's documentElement swap. The
+      // template carries no <title>/lang, so we re-apply them once the form
+      // is in the DOM (which means the swap has happened).
+      var SEO_TITLE = 'Andres Godinez | Automatización con IA para PYMES y agencias';
+      var SEO_LANG = 'es';
       var hooked = false;
       var intervalId = setInterval(function () {
         if (hooked) return;
@@ -30,10 +83,18 @@
         if (!form) return;
         hooked = true;
         clearInterval(intervalId);
+        restoreSeo();
         hookForm(form);
       }, 150);
       // Stop polling after ~30s if the form never shows up.
       setTimeout(function () { clearInterval(intervalId); }, 30000);
+
+      function restoreSeo() {
+        try {
+          if (document.title !== SEO_TITLE) document.title = SEO_TITLE;
+          if (document.documentElement.lang !== SEO_LANG) document.documentElement.lang = SEO_LANG;
+        } catch (e) { /* noop */ }
+      }
 
       function hookForm(form) {
         form.setAttribute('novalidate', '');

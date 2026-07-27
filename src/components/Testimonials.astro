@@ -1,0 +1,45 @@
+---
+const items = [
+  { stat: '68%',  quote: 'Redujimos en 68% el tiempo de respuesta a clientes. El asistente atiende solo y solo nos pasa lo importante.', initial: 'M', name: 'María L.', role: 'Agencia de marketing' },
+  { stat: '+3x',  quote: 'Triplicamos los leads calificados sin contratar a nadie. La IA filtra y agenda en automático.', initial: 'J', name: 'Jorge R.', role: 'PYME · e-commerce' },
+  { stat: '40h',  quote: 'Nos ahorramos 40 horas al mes en tareas repetitivas. Andres automatizó todo el proceso y ahora corre solo.', initial: 'C', name: 'Carla M.', role: 'Agencia de marketing' },
+  { stat: '-50%', quote: 'Bajamos a la mitad las tareas administrativas. Ahora el equipo se enfoca en vender, no en copiar datos.', initial: 'D', name: 'Diego S.', role: 'PYME · servicios' },
+  { stat: '+90%', quote: 'Casi todas las consultas se resuelven sin intervención humana. Nuestros clientes notan la respuesta inmediata.', initial: 'A', name: 'Ana P.', role: 'Agencia de marketing' },
+];
+---
+<section id="casos" class="section">
+  <div class="section-head">
+    <div class="eyebrow">CASOS DE ÉXITO</div>
+    <h2>Resultados reales de clientes</h2>
+  </div>
+  <div class="marquee-mask">
+    <div class="marquee-track">
+      {items.map(t => (
+        <article class="testi-card">
+          <div class="testi-stat">{t.stat}</div>
+          <p>"{t.quote}"</p>
+          <div class="testi-author">
+            <span class="avatar">{t.initial}</span>
+            <div>
+              <div class="testi-name">{t.name}</div>
+              <div class="testi-role">{t.role}</div>
+            </div>
+          </div>
+        </article>
+      ))}
+      {items.map(t => (
+        <article class="testi-card" aria-hidden="true">
+          <div class="testi-stat">{t.stat}</div>
+          <p>"{t.quote}"</p>
+          <div class="testi-author">
+            <span class="avatar">{t.initial}</span>
+            <div>
+              <div class="testi-name">{t.name}</div>
+              <div class="testi-role">{t.role}</div>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

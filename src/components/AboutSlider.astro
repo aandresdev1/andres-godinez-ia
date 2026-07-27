@@ -1,0 +1,73 @@
+---
+---
+<section id="sobre-mi" class="section">
+  <div class="slider-controls">
+    <div class="dots">
+      <button class="dot is-active" data-slide="quien" aria-label="Quién está detrás"></button>
+      <button class="dot" data-slide="divulg" aria-label="Divulgación tech"></button>
+    </div>
+    <button class="arrow" id="slidePrev" aria-label="Anterior">&#8592;</button>
+    <button class="arrow arrow-primary" id="slideNext" aria-label="Siguiente">&#8594;</button>
+  </div>
+
+  <div class="slide is-active" data-slide="quien">
+    <div class="about-grid">
+      <div class="photo-wrap">
+        <div class="photo-glow" aria-hidden="true"></div>
+        <img class="photo" src="/assets/andres.png" alt="Andres Godinez">
+        <div class="badge-available"><span class="badge-dot"></span> Disponible para proyectos</div>
+      </div>
+      <div>
+        <div class="eyebrow">QUIÉN ESTÁ DETRÁS</div>
+        <h2>Hola, soy Andres 👋</h2>
+        <p class="about-p">Ayudo a PYMES y agencias a automatizar su operación con inteligencia artificial. No vendo tecnología por moda: diseño soluciones simples que te devuelven tiempo y te hacen vender más.</p>
+        <p class="about-p">Trabajas directamente conmigo, de principio a fin — sin intermediarios y con acompañamiento real.</p>
+        <p class="about-p">También soy <span class="accent-soft">divulgador de tecnología</span>: en mis redes comparto, sin tecnicismos, cómo la IA y la tecnología pueden ayudar a tu negocio en el día a día.</p>
+        <div class="chips">
+          <span class="chip"><span class="accent">✓</span> Trato directo</span>
+          <span class="chip"><span class="accent">✓</span> Soluciones a la medida</span>
+          <span class="chip"><span class="accent">✓</span> Acompañamiento real</span>
+        </div>
+        <a href="#contacto" class="link-accent">Conversemos sobre tu negocio →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide" data-slide="divulg">
+    <div class="divulg-head">
+      <div class="eyebrow">DIVULGACIÓN TECH</div>
+      <h2>También comparto tecnología en mis redes</h2>
+      <p class="lead">Explico la IA y la tecnología sin tecnicismos, para que cualquiera pueda aprovecharla.</p>
+    </div>
+    <div class="deck">
+      <div class="deck-card" style="--rot:-12deg; z-index:1;"><img src="/assets/video-1.png" alt="Video 1"></div>
+      <div class="deck-card" style="--rot:-4deg; z-index:2;"><img src="/assets/video-2.png" alt="Video 2"></div>
+      <div class="deck-card" style="--rot:4deg; z-index:3;"><img src="/assets/video-3.png" alt="Video 3"></div>
+      <div class="deck-card" style="--rot:12deg; z-index:4;"><img src="/assets/video-4.png" alt="Video 4"></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const slides = Array.from(document.querySelectorAll<HTMLElement>('.slide[data-slide]'));
+  const dots = Array.from(document.querySelectorAll<HTMLElement>('.dot[data-slide]'));
+  const order = ['quien', 'divulg'];
+  let current = 'quien';
+
+  function showSlide(name: string) {
+    current = name;
+    slides.forEach(s => s.classList.toggle('is-active', s.dataset.slide === name));
+    dots.forEach(d => d.classList.toggle('is-active', d.dataset.slide === name));
+  }
+
+  function step() {
+    const i = order.indexOf(current);
+    showSlide(order[(i + 1) % order.length]);
+  }
+
+  document.getElementById('slidePrev')?.addEventListener('click', step);
+  document.getElementById('slideNext')?.addEventListener('click', step);
+  dots.forEach(d => {
+    d.addEventListener('click', () => showSlide(d.dataset.slide!));
+  });
+</script>

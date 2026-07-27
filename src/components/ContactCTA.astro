@@ -1,0 +1,26 @@
+---
+const email = 'hello@aandresdev.com';
+const mailto = `mailto:${email}?subject=${encodeURIComponent('Diagnóstico gratis — automatización con IA')}`;
+---
+<section id="contacto" class="section">
+  <div class="cta-box">
+    <div class="cta-glow" aria-hidden="true"></div>
+    <div class="cta-grid">
+      <div>
+        <h2>¿Listo para vender más con menos esfuerzo?</h2>
+        <p class="lead">Cuéntame qué te quita tiempo hoy y te propongo cómo automatizarlo. Te respondo en menos de 24 horas.</p>
+        <ul class="cta-list">
+          <li><span class="accent">✓</span> Diagnóstico gratuito de tu negocio</li>
+          <li><span class="accent">✓</span> Propuesta a la medida, sin compromiso</li>
+          <li><span class="accent">✓</span> Resultados visibles desde la primera semana</li>
+        </ul>
+      </div>
+      <div>
+        <div class="contact-form">
+          <p class="lead" style="margin-bottom: 20px;">Escríbeme directo por correo — te respondo personalmente.</p>
+          <a href={mailto} class="btn-primary btn-block">Escríbeme a {email} →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

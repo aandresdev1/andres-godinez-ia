@@ -1,0 +1,23 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import AboutSlider from '../components/AboutSlider.astro';
+import Services from '../components/Services.astro';
+import Testimonials from '../components/Testimonials.astro';
+import ContactCTA from '../components/ContactCTA.astro';
+import Footer from '../components/Footer.astro';
+
+export const prerender = false;
+---
+<Layout>
+  <Header />
+  <main id="top">
+    <Hero />
+    <AboutSlider />
+    <Services />
+    <Testimonials />
+    <ContactCTA />
+  </main>
+  <Footer />
+</Layout>

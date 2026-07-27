@@ -70,6 +70,31 @@ const rest = sorted.slice(1);
     </section>
   </main>
   <Footer />
+
+  <div class="gate-overlay" id="gateOverlay" hidden>
+    <div class="gate-modal" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+      <button type="button" class="gate-close" id="gateClose" aria-label="Cerrar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+
+      <div id="gateForm">
+        <div class="gate-title" id="gateTitle">Este recurso llega por correo</div>
+        <div class="gate-tone">Te lo mando al correo. De paso te llegan los recursos nuevos, y te puedes salir cuando quieras.</div>
+        <div class="gate-notice">Llega a tu bandeja de entrada, no se descarga aquí.</div>
+        <input type="email" id="gateEmail" placeholder="tu@correo.com" class="gate-input" autocomplete="email">
+        <div class="gate-error" id="gateError" hidden></div>
+        <button type="button" id="gateSubmit" class="btn-primary btn-block">Enviármelo</button>
+        <div class="gate-fine">Sin spam. Un correo por semana como máximo.</div>
+      </div>
+
+      <div id="gateSuccess" hidden>
+        <div class="gate-success-icon">✓</div>
+        <div class="gate-success-title">Listo, revisa tu correo</div>
+        <div class="gate-success-text">También desbloqueaste el resto de recursos con registro.</div>
+        <button type="button" id="gateDone" class="btn-primary btn-block">Continuar al recurso</button>
+      </div>
+    </div>
+  </div>
 </Layout>
 
 <script>
@@ -103,6 +128,85 @@ const rest = sorted.slice(1);
       chip.classList.add('is-active');
       chip.setAttribute('aria-selected', 'true');
       applyFilter(chip.dataset.chip!);
+    });
+  });
+
+  const STORAGE_KEY = 'andres_recursos_subscribed';
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const overlay = document.getElementById('gateOverlay') as HTMLElement | null;
+  const closeBtn = document.getElementById('gateClose') as HTMLButtonElement | null;
+  const formPane = document.getElementById('gateForm') as HTMLElement | null;
+  const successPane = document.getElementById('gateSuccess') as HTMLElement | null;
+  const titleEl = document.getElementById('gateTitle') as HTMLElement | null;
+  const emailInput = document.getElementById('gateEmail') as HTMLInputElement | null;
+  const errorEl = document.getElementById('gateError') as HTMLElement | null;
+  const submitBtn = document.getElementById('gateSubmit') as HTMLButtonElement | null;
+  const doneBtn = document.getElementById('gateDone') as HTMLButtonElement | null;
+
+  let pendingSlug: string | null = null;
+
+  function isSubscribed() {
+    try { return localStorage.getItem(STORAGE_KEY) === '1'; } catch { return false; }
+  }
+  function markSubscribed(email: string) {
+    try {
+      localStorage.setItem(STORAGE_KEY, '1');
+      localStorage.setItem('andres_recursos_email', email);
+    } catch {}
+  }
+
+  function openGate(slug: string, title: string) {
+    if (!overlay || !formPane || !successPane || !titleEl) return;
+    pendingSlug = slug;
+    titleEl.textContent = title || 'Este recurso llega por correo';
+    formPane.hidden = false;
+    successPane.hidden = true;
+    if (emailInput) emailInput.value = '';
+    if (errorEl) errorEl.hidden = true;
+    overlay.hidden = false;
+    requestAnimationFrame(() => overlay.classList.add('is-open'));
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => emailInput?.focus(), 120);
+  }
+  function closeGate() {
+    if (!overlay) return;
+    overlay.classList.remove('is-open');
+    document.body.style.overflow = '';
+    setTimeout(() => { overlay.hidden = true; }, 200);
+  }
+
+  function submitGate() {
+    if (!emailInput || !errorEl || !formPane || !successPane) return;
+    const email = emailInput.value.trim();
+    if (!EMAIL_RE.test(email)) {
+      errorEl.textContent = 'Ese correo no parece válido.';
+      errorEl.hidden = false;
+      return;
+    }
+    errorEl.hidden = true;
+    markSubscribed(email);
+    formPane.hidden = true;
+    successPane.hidden = false;
+  }
+
+  submitBtn?.addEventListener('click', submitGate);
+  emailInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitGate(); });
+  closeBtn?.addEventListener('click', closeGate);
+  overlay?.addEventListener('click', (e) => { if (e.target === overlay) closeGate(); });
+  doneBtn?.addEventListener('click', () => {
+    if (pendingSlug) window.location.href = `/${pendingSlug}`;
+    else closeGate();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlay && !overlay.hidden) closeGate();
+  });
+
+  document.querySelectorAll<HTMLAnchorElement>('.resource-card[data-gated="true"]').forEach((card) => {
+    card.addEventListener('click', (e) => {
+      if (isSubscribed()) return;
+      e.preventDefault();
+      openGate(card.dataset.slug || '', card.dataset.title || '');
     });
   });
 </script>

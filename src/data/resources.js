@@ -16,6 +16,7 @@ export const RESOURCES = [
     title: 'Workflow n8n: cotizaciones en PDF automáticas',
     category: 'Automatizaciones',
     delivery: 'file',
+    gated: true,
     date: '2026-07-20',
     description: 'Arma la cotización en PDF, la sube a Drive y le avisa al cliente por WhatsApp, todo desde un solo flujo.',
     bodyParagraphs: [
@@ -43,6 +44,7 @@ export const RESOURCES = [
     title: 'Ebook: automatiza tu negocio en 30 días',
     category: 'Guías',
     delivery: 'file',
+    gated: true,
     date: '2026-07-10',
     description: 'Un plan de 30 días para pasar de hacerlo todo a mano a tener tus primeros procesos corriendo solos.',
     bodyParagraphs: [

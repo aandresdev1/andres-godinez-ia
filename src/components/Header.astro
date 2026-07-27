@@ -1,11 +1,11 @@
 ---
-const home = '/';
 ---
 <header class="site-header">
   <nav class="nav">
-    <a href={home} class="nav-logo">
+    <a href="/" class="nav-logo">
       <span class="brand"><span class="brand-a">a</span>andresdev</span>
     </a>
+
     <div class="nav-links">
       <a href="/#servicios">Servicios</a>
       <a href="/#casos">Casos de éxito</a>
@@ -13,5 +13,72 @@ const home = '/';
       <a href="/recursos">Recursos</a>
       <a href="/#contacto" class="btn-primary">Agenda una llamada</a>
     </div>
+
+    <button type="button" class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobileDrawer">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </button>
   </nav>
 </header>
+
+<div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+
+<aside class="drawer" id="mobileDrawer" role="dialog" aria-modal="true" aria-label="Menú" hidden>
+  <div class="drawer-head">
+    <span class="brand"><span class="brand-a">a</span>andresdev</span>
+    <button type="button" class="drawer-close" id="drawerClose" aria-label="Cerrar menú">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+  </div>
+
+  <nav class="drawer-links">
+    <a href="/#servicios" data-drawer-link>Servicios</a>
+    <a href="/#casos" data-drawer-link>Casos de éxito</a>
+    <a href="/#sobre-mi" data-drawer-link>Sobre mí</a>
+    <a href="/recursos" data-drawer-link>Recursos</a>
+  </nav>
+
+  <div class="drawer-cta">
+    <a href="/#contacto" class="btn-primary btn-block" data-drawer-link>Agenda una llamada</a>
+  </div>
+</aside>
+
+<script>
+  const toggle = document.getElementById('navToggle') as HTMLButtonElement | null;
+  const close = document.getElementById('drawerClose') as HTMLButtonElement | null;
+  const drawer = document.getElementById('mobileDrawer') as HTMLElement | null;
+  const backdrop = document.getElementById('drawerBackdrop') as HTMLElement | null;
+  const links = document.querySelectorAll<HTMLAnchorElement>('[data-drawer-link]');
+
+  function openDrawer() {
+    if (!drawer || !backdrop || !toggle) return;
+    drawer.hidden = false;
+    backdrop.hidden = false;
+    requestAnimationFrame(() => {
+      drawer.classList.add('is-open');
+      backdrop.classList.add('is-open');
+    });
+    toggle.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrawer() {
+    if (!drawer || !backdrop || !toggle) return;
+    drawer.classList.remove('is-open');
+    backdrop.classList.remove('is-open');
+    toggle.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+    setTimeout(() => {
+      drawer.hidden = true;
+      backdrop.hidden = true;
+    }, 240);
+  }
+
+  toggle?.addEventListener('click', openDrawer);
+  close?.addEventListener('click', closeDrawer);
+  backdrop?.addEventListener('click', closeDrawer);
+  links.forEach(a => a.addEventListener('click', closeDrawer));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && drawer && !drawer.hidden) closeDrawer();
+  });
+</script>

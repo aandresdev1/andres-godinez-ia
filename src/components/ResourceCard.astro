@@ -9,6 +9,7 @@ interface Props {
     delivery: 'prompt' | 'file' | 'guide' | 'link';
     date: string;
     description: string;
+    gated?: boolean;
   };
   featured?: boolean;
 }
@@ -20,6 +21,9 @@ const meta = CATEGORY_META[resource.category] || { color: '#ccc', bg: 'rgba(255,
   href={`/${resource.slug}`}
   class:list={['resource-card', { 'is-featured': featured }]}
   data-category={resource.category}
+  data-slug={resource.slug}
+  data-gated={resource.gated ? 'true' : 'false'}
+  data-title={resource.title}
 >
   <div class="resource-card-top">
     <span class="resource-icon" aria-hidden="true">
@@ -43,6 +47,11 @@ const meta = CATEGORY_META[resource.category] || { color: '#ccc', bg: 'rgba(255,
   <p class="resource-card-desc">{resource.description}</p>
   <div class="resource-card-footer">
     <span class="resource-card-date">{formatDate(resource.date)}</span>
-    <span class="resource-card-cta">Ver recurso →</span>
+    <span class="resource-card-cta">
+      {resource.gated && (
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px; vertical-align:-2px;"><rect x="5" y="11" width="14" height="9" rx="1.5"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+      )}
+      Ver recurso →
+    </span>
   </div>
 </a>

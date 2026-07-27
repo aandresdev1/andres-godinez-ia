@@ -40,7 +40,23 @@ const canonical = `https://automatiza.aandresdev.com/${resource.slug}`;
       <p class="detail-desc">{resource.description}</p>
     </section>
 
-    <section class="detail-content">
+    {resource.gated && (
+      <section class="gate-inline" id="gateInline" hidden>
+        <div class="gate-inline-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="1.5"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+        </div>
+        <div class="gate-inline-title">Este recurso llega por correo</div>
+        <div class="gate-inline-text">Te lo mando al correo. De paso te llegan los recursos nuevos, y te puedes salir cuando quieras.</div>
+        <div class="gate-inline-form">
+          <input type="email" id="gateInlineEmail" placeholder="tu@correo.com" class="gate-input" autocomplete="email">
+          <button type="button" id="gateInlineSubmit" class="btn-primary">Enviármelo</button>
+        </div>
+        <div class="gate-inline-error" id="gateInlineError" hidden></div>
+        <div class="gate-inline-fine">Sin spam. Un correo por semana como máximo.</div>
+      </section>
+    )}
+
+    <section class="detail-content" id="detailContent" data-gated={resource.gated ? 'true' : 'false'}>
       {resource.delivery === 'prompt' && resource.content && (
         <div class="detail-code">
           <div class="detail-code-head">
@@ -98,4 +114,47 @@ const canonical = `https://automatiza.aandresdev.com/${resource.slug}`;
       }
     });
   }
+
+  const STORAGE_KEY = 'andres_recursos_subscribed';
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const content = document.getElementById('detailContent') as HTMLElement | null;
+  const gateInline = document.getElementById('gateInline') as HTMLElement | null;
+
+  function isSubscribed() {
+    try { return localStorage.getItem(STORAGE_KEY) === '1'; } catch { return false; }
+  }
+
+  if (content && content.dataset.gated === 'true' && gateInline) {
+    if (isSubscribed()) {
+      gateInline.hidden = true;
+      content.style.display = '';
+    } else {
+      gateInline.hidden = false;
+      content.style.display = 'none';
+    }
+  }
+
+  const gateEmail = document.getElementById('gateInlineEmail') as HTMLInputElement | null;
+  const gateSubmit = document.getElementById('gateInlineSubmit') as HTMLButtonElement | null;
+  const gateError = document.getElementById('gateInlineError') as HTMLElement | null;
+
+  function submitInlineGate() {
+    if (!gateEmail || !gateError) return;
+    const email = gateEmail.value.trim();
+    if (!EMAIL_RE.test(email)) {
+      gateError.textContent = 'Ese correo no parece válido.';
+      gateError.hidden = false;
+      return;
+    }
+    try {
+      localStorage.setItem(STORAGE_KEY, '1');
+      localStorage.setItem('andres_recursos_email', email);
+    } catch {}
+    if (gateInline) gateInline.hidden = true;
+    if (content) content.style.display = '';
+  }
+
+  gateSubmit?.addEventListener('click', submitInlineGate);
+  gateEmail?.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitInlineGate(); });
 </script>

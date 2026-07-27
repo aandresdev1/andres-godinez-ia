@@ -801,14 +801,108 @@ h2 {
   font-family: "IBM Plex Mono", monospace;
 }
 
+/* ===== Nav toggle (hamburger) + Drawer ===== */
+.nav-toggle {
+  display: none;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.nav-toggle span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--ink);
+  border-radius: 2px;
+}
+
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+.drawer-backdrop.is-open { opacity: 1; }
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  width: min(340px, 88vw);
+  background: #0f0c08;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  transform: translateX(100%);
+  transition: transform 0.24s cubic-bezier(.2, .7, .2, 1);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 22px 28px;
+}
+.drawer.is-open { transform: translateX(0); }
+
+.drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+.drawer-close {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9px;
+  background: transparent;
+  color: rgba(236, 236, 241, 0.7);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.drawer-close:hover { color: var(--ink); }
+
+.drawer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+.drawer-links a {
+  display: block;
+  padding: 14px 12px;
+  color: rgba(236, 236, 241, 0.82);
+  text-decoration: none;
+  font-size: 17px;
+  border-radius: 10px;
+  transition: background 0.15s ease;
+}
+.drawer-links a:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--ink);
+}
+
+.drawer-cta {
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 860px) {
-  .nav-links {
-    gap: 16px;
-  }
-  .nav-links a:not(.btn-primary) {
-    display: none;
-  }
+  .nav-links { display: none; }
+  .nav-toggle { display: flex; }
   .about-grid {
     grid-template-columns: 1fr;
     gap: 32px;
@@ -1206,5 +1300,192 @@ h2 {
   .recursos-hero {
     padding: 60px 0 30px;
   }
+}
+
+/* ============================================================
+ * EMAIL GATE · modal + inline
+ * ============================================================ */
+
+.gate-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.gate-overlay.is-open { opacity: 1; }
+
+.gate-modal {
+  width: 100%;
+  max-width: 420px;
+  background: #0f0c08;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 28px 24px;
+  position: relative;
+  transform: translateY(10px);
+  transition: transform 0.22s cubic-bezier(.2, .7, .2, 1);
+}
+.gate-overlay.is-open .gate-modal { transform: translateY(0); }
+
+.gate-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: rgba(236, 236, 241, 0.6);
+  border-radius: 7px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gate-close:hover {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.gate-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 4px 30px 10px 0;
+  line-height: 1.35;
+}
+.gate-tone {
+  font-size: 14px;
+  color: rgba(236, 236, 241, 0.65);
+  line-height: 1.55;
+  margin-bottom: 12px;
+}
+.gate-notice {
+  font-size: 12.5px;
+  color: rgba(236, 236, 241, 0.42);
+  background: rgba(20, 15, 8, 0.5);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 11px;
+  margin-bottom: 18px;
+}
+.gate-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--ink);
+  font-size: 14.5px;
+  font-family: inherit;
+  outline: none;
+  margin-bottom: 8px;
+  box-sizing: border-box;
+}
+.gate-input:focus {
+  border-color: rgba(242, 163, 60, 0.5);
+}
+.gate-error {
+  color: #ff8a7a;
+  font-size: 12.5px;
+  margin-bottom: 8px;
+}
+.gate-fine {
+  font-size: 11.5px;
+  color: rgba(236, 236, 241, 0.42);
+  text-align: center;
+  margin-top: 14px;
+}
+
+.gate-success-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(242, 163, 60, 0.14);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin: 4px auto 16px;
+}
+.gate-success-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.gate-success-text {
+  font-size: 14px;
+  color: rgba(236, 236, 241, 0.6);
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+/* Inline gate en detalle */
+.gate-inline {
+  border: 1px solid rgba(242, 163, 60, 0.28);
+  border-radius: 16px;
+  padding: 32px 26px;
+  text-align: center;
+  max-width: 460px;
+  margin: 0 auto 40px;
+  background: linear-gradient(160deg, rgba(242, 163, 60, 0.08), rgba(20, 15, 8, 0.4));
+}
+.gate-inline-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(242, 163, 60, 0.14);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+.gate-inline-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.gate-inline-text {
+  font-size: 14.5px;
+  color: rgba(236, 236, 241, 0.65);
+  line-height: 1.55;
+  margin-bottom: 22px;
+}
+.gate-inline-form {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.gate-inline-form .gate-input {
+  flex: 1;
+  min-width: 180px;
+  margin-bottom: 0;
+}
+.gate-inline-form .btn-primary {
+  white-space: nowrap;
+  padding: 12px 20px;
+}
+.gate-inline-error {
+  color: #ff8a7a;
+  font-size: 12.5px;
+  margin-top: 10px;
+  text-align: left;
+}
+.gate-inline-fine {
+  font-size: 11.5px;
+  color: rgba(236, 236, 241, 0.42);
+  margin-top: 14px;
 }
 

@@ -48,26 +48,30 @@
   </div>
 </section>
 
-<script>
-  const slides = Array.from(document.querySelectorAll<HTMLElement>('.slide[data-slide]'));
-  const dots = Array.from(document.querySelectorAll<HTMLElement>('.dot[data-slide]'));
-  const order = ['quien', 'divulg'];
-  let current = 'quien';
+<script is:inline>
+  (function () {
+    var slides = Array.prototype.slice.call(document.querySelectorAll('.slide[data-slide]'));
+    var dots = Array.prototype.slice.call(document.querySelectorAll('.dot[data-slide]'));
+    var order = ['quien', 'divulg'];
+    var current = 'quien';
 
-  function showSlide(name: string) {
-    current = name;
-    slides.forEach(s => s.classList.toggle('is-active', s.dataset.slide === name));
-    dots.forEach(d => d.classList.toggle('is-active', d.dataset.slide === name));
-  }
+    function showSlide(name) {
+      current = name;
+      slides.forEach(function (s) { s.classList.toggle('is-active', s.dataset.slide === name); });
+      dots.forEach(function (d) { d.classList.toggle('is-active', d.dataset.slide === name); });
+    }
 
-  function step() {
-    const i = order.indexOf(current);
-    showSlide(order[(i + 1) % order.length]);
-  }
+    function step() {
+      var i = order.indexOf(current);
+      showSlide(order[(i + 1) % order.length]);
+    }
 
-  document.getElementById('slidePrev')?.addEventListener('click', step);
-  document.getElementById('slideNext')?.addEventListener('click', step);
-  dots.forEach(d => {
-    d.addEventListener('click', () => showSlide(d.dataset.slide!));
-  });
+    var prev = document.getElementById('slidePrev');
+    var next = document.getElementById('slideNext');
+    if (prev) prev.addEventListener('click', step);
+    if (next) next.addEventListener('click', step);
+    dots.forEach(function (d) {
+      d.addEventListener('click', function () { showSlide(d.dataset.slide); });
+    });
+  })();
 </script>

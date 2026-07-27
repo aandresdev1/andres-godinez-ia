@@ -97,116 +97,118 @@ const rest = sorted.slice(1);
   </div>
 </Layout>
 
-<script>
-  const chips = document.querySelectorAll<HTMLButtonElement>('.chip[data-chip]');
-  const cards = document.querySelectorAll<HTMLElement>('.recursos-grid .resource-card');
-  const featured = document.querySelector<HTMLElement>('.recursos-featured');
-  const empty = document.querySelector<HTMLElement>('.recursos-empty');
-  const grid = document.querySelector<HTMLElement>('.recursos-grid');
+<script is:inline>
+  (function () {
+    var chips = document.querySelectorAll('.chip[data-chip]');
+    var cards = document.querySelectorAll('.recursos-grid .resource-card');
+    var featured = document.querySelector('.recursos-featured');
+    var empty = document.querySelector('.recursos-empty');
+    var grid = document.querySelector('.recursos-grid');
 
-  function applyFilter(cat: string) {
-    let visible = 0;
-    cards.forEach((c) => {
-      const match = cat === 'Todos' || c.dataset.category === cat;
-      c.style.display = match ? '' : 'none';
-      if (match) visible++;
-    });
-    if (featured) featured.style.display = cat === 'Todos' ? '' : 'none';
-    if (empty && grid) {
-      const showEmpty = cat !== 'Todos' && visible === 0;
-      empty.hidden = !showEmpty;
-      grid.style.display = showEmpty ? 'none' : '';
-    }
-  }
-
-  chips.forEach((chip) => {
-    chip.addEventListener('click', () => {
-      chips.forEach((c) => {
-        c.classList.remove('is-active');
-        c.setAttribute('aria-selected', 'false');
+    function applyFilter(cat) {
+      var visible = 0;
+      cards.forEach(function (c) {
+        var match = cat === 'Todos' || c.dataset.category === cat;
+        c.style.display = match ? '' : 'none';
+        if (match) visible++;
       });
-      chip.classList.add('is-active');
-      chip.setAttribute('aria-selected', 'true');
-      applyFilter(chip.dataset.chip!);
-    });
-  });
-
-  const STORAGE_KEY = 'andres_recursos_subscribed';
-  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  const overlay = document.getElementById('gateOverlay') as HTMLElement | null;
-  const closeBtn = document.getElementById('gateClose') as HTMLButtonElement | null;
-  const formPane = document.getElementById('gateForm') as HTMLElement | null;
-  const successPane = document.getElementById('gateSuccess') as HTMLElement | null;
-  const titleEl = document.getElementById('gateTitle') as HTMLElement | null;
-  const emailInput = document.getElementById('gateEmail') as HTMLInputElement | null;
-  const errorEl = document.getElementById('gateError') as HTMLElement | null;
-  const submitBtn = document.getElementById('gateSubmit') as HTMLButtonElement | null;
-  const doneBtn = document.getElementById('gateDone') as HTMLButtonElement | null;
-
-  let pendingSlug: string | null = null;
-
-  function isSubscribed() {
-    try { return localStorage.getItem(STORAGE_KEY) === '1'; } catch { return false; }
-  }
-  function markSubscribed(email: string) {
-    try {
-      localStorage.setItem(STORAGE_KEY, '1');
-      localStorage.setItem('andres_recursos_email', email);
-    } catch {}
-  }
-
-  function openGate(slug: string, title: string) {
-    if (!overlay || !formPane || !successPane || !titleEl) return;
-    pendingSlug = slug;
-    titleEl.textContent = title || 'Este recurso llega por correo';
-    formPane.hidden = false;
-    successPane.hidden = true;
-    if (emailInput) emailInput.value = '';
-    if (errorEl) errorEl.hidden = true;
-    overlay.hidden = false;
-    requestAnimationFrame(() => overlay.classList.add('is-open'));
-    document.body.style.overflow = 'hidden';
-    setTimeout(() => emailInput?.focus(), 120);
-  }
-  function closeGate() {
-    if (!overlay) return;
-    overlay.classList.remove('is-open');
-    document.body.style.overflow = '';
-    setTimeout(() => { overlay.hidden = true; }, 200);
-  }
-
-  function submitGate() {
-    if (!emailInput || !errorEl || !formPane || !successPane) return;
-    const email = emailInput.value.trim();
-    if (!EMAIL_RE.test(email)) {
-      errorEl.textContent = 'Ese correo no parece válido.';
-      errorEl.hidden = false;
-      return;
+      if (featured) featured.style.display = cat === 'Todos' ? '' : 'none';
+      if (empty && grid) {
+        var showEmpty = cat !== 'Todos' && visible === 0;
+        empty.hidden = !showEmpty;
+        grid.style.display = showEmpty ? 'none' : '';
+      }
     }
-    errorEl.hidden = true;
-    markSubscribed(email);
-    formPane.hidden = true;
-    successPane.hidden = false;
-  }
 
-  submitBtn?.addEventListener('click', submitGate);
-  emailInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitGate(); });
-  closeBtn?.addEventListener('click', closeGate);
-  overlay?.addEventListener('click', (e) => { if (e.target === overlay) closeGate(); });
-  doneBtn?.addEventListener('click', () => {
-    if (pendingSlug) window.location.href = `/${pendingSlug}`;
-    else closeGate();
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && overlay && !overlay.hidden) closeGate();
-  });
-
-  document.querySelectorAll<HTMLAnchorElement>('.resource-card[data-gated="true"]').forEach((card) => {
-    card.addEventListener('click', (e) => {
-      if (isSubscribed()) return;
-      e.preventDefault();
-      openGate(card.dataset.slug || '', card.dataset.title || '');
+    chips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        chips.forEach(function (c) {
+          c.classList.remove('is-active');
+          c.setAttribute('aria-selected', 'false');
+        });
+        chip.classList.add('is-active');
+        chip.setAttribute('aria-selected', 'true');
+        applyFilter(chip.dataset.chip);
+      });
     });
-  });
+
+    var STORAGE_KEY = 'andres_recursos_subscribed';
+    var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    var overlay = document.getElementById('gateOverlay');
+    var closeBtn = document.getElementById('gateClose');
+    var formPane = document.getElementById('gateForm');
+    var successPane = document.getElementById('gateSuccess');
+    var titleEl = document.getElementById('gateTitle');
+    var emailInput = document.getElementById('gateEmail');
+    var errorEl = document.getElementById('gateError');
+    var submitBtn = document.getElementById('gateSubmit');
+    var doneBtn = document.getElementById('gateDone');
+
+    var pendingSlug = null;
+
+    function isSubscribed() {
+      try { return localStorage.getItem(STORAGE_KEY) === '1'; } catch (e) { return false; }
+    }
+    function markSubscribed(email) {
+      try {
+        localStorage.setItem(STORAGE_KEY, '1');
+        localStorage.setItem('andres_recursos_email', email);
+      } catch (e) {}
+    }
+
+    function openGate(slug, title) {
+      if (!overlay || !formPane || !successPane || !titleEl) return;
+      pendingSlug = slug;
+      titleEl.textContent = title || 'Este recurso llega por correo';
+      formPane.hidden = false;
+      successPane.hidden = true;
+      if (emailInput) emailInput.value = '';
+      if (errorEl) errorEl.hidden = true;
+      overlay.hidden = false;
+      requestAnimationFrame(function () { overlay.classList.add('is-open'); });
+      document.body.style.overflow = 'hidden';
+      setTimeout(function () { if (emailInput) emailInput.focus(); }, 120);
+    }
+    function closeGate() {
+      if (!overlay) return;
+      overlay.classList.remove('is-open');
+      document.body.style.overflow = '';
+      setTimeout(function () { overlay.hidden = true; }, 200);
+    }
+
+    function submitGate() {
+      if (!emailInput || !errorEl || !formPane || !successPane) return;
+      var email = emailInput.value.trim();
+      if (!EMAIL_RE.test(email)) {
+        errorEl.textContent = 'Ese correo no parece válido.';
+        errorEl.hidden = false;
+        return;
+      }
+      errorEl.hidden = true;
+      markSubscribed(email);
+      formPane.hidden = true;
+      successPane.hidden = false;
+    }
+
+    if (submitBtn) submitBtn.addEventListener('click', submitGate);
+    if (emailInput) emailInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') submitGate(); });
+    if (closeBtn) closeBtn.addEventListener('click', closeGate);
+    if (overlay) overlay.addEventListener('click', function (e) { if (e.target === overlay) closeGate(); });
+    if (doneBtn) doneBtn.addEventListener('click', function () {
+      if (pendingSlug) window.location.href = '/' + pendingSlug;
+      else closeGate();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay && !overlay.hidden) closeGate();
+    });
+
+    document.querySelectorAll('.resource-card[data-gated="true"]').forEach(function (card) {
+      card.addEventListener('click', function (e) {
+        if (isSubscribed()) return;
+        e.preventDefault();
+        openGate(card.dataset.slug || '', card.dataset.title || '');
+      });
+    });
+  })();
 </script>

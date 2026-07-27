@@ -44,41 +44,43 @@
   </div>
 </aside>
 
-<script>
-  const toggle = document.getElementById('navToggle') as HTMLButtonElement | null;
-  const close = document.getElementById('drawerClose') as HTMLButtonElement | null;
-  const drawer = document.getElementById('mobileDrawer') as HTMLElement | null;
-  const backdrop = document.getElementById('drawerBackdrop') as HTMLElement | null;
-  const links = document.querySelectorAll<HTMLAnchorElement>('[data-drawer-link]');
+<script is:inline>
+  (function () {
+    var toggle = document.getElementById('navToggle');
+    var closeBtn = document.getElementById('drawerClose');
+    var drawer = document.getElementById('mobileDrawer');
+    var backdrop = document.getElementById('drawerBackdrop');
+    var links = document.querySelectorAll('[data-drawer-link]');
 
-  function openDrawer() {
-    if (!drawer || !backdrop || !toggle) return;
-    drawer.hidden = false;
-    backdrop.hidden = false;
-    requestAnimationFrame(() => {
-      drawer.classList.add('is-open');
-      backdrop.classList.add('is-open');
+    function openDrawer() {
+      if (!drawer || !backdrop || !toggle) return;
+      drawer.hidden = false;
+      backdrop.hidden = false;
+      requestAnimationFrame(function () {
+        drawer.classList.add('is-open');
+        backdrop.classList.add('is-open');
+      });
+      toggle.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeDrawer() {
+      if (!drawer || !backdrop || !toggle) return;
+      drawer.classList.remove('is-open');
+      backdrop.classList.remove('is-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+      setTimeout(function () {
+        drawer.hidden = true;
+        backdrop.hidden = true;
+      }, 240);
+    }
+
+    if (toggle) toggle.addEventListener('click', openDrawer);
+    if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+    if (backdrop) backdrop.addEventListener('click', closeDrawer);
+    links.forEach(function (a) { a.addEventListener('click', closeDrawer); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && drawer && !drawer.hidden) closeDrawer();
     });
-    toggle.setAttribute('aria-expanded', 'true');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeDrawer() {
-    if (!drawer || !backdrop || !toggle) return;
-    drawer.classList.remove('is-open');
-    backdrop.classList.remove('is-open');
-    toggle.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
-    setTimeout(() => {
-      drawer.hidden = true;
-      backdrop.hidden = true;
-    }, 240);
-  }
-
-  toggle?.addEventListener('click', openDrawer);
-  close?.addEventListener('click', closeDrawer);
-  backdrop?.addEventListener('click', closeDrawer);
-  links.forEach(a => a.addEventListener('click', closeDrawer));
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && drawer && !drawer.hidden) closeDrawer();
-  });
+  })();
 </script>

@@ -95,66 +95,70 @@ const canonical = `https://automatiza.aandresdev.com/${resource.slug}`;
   <Footer />
 </Layout>
 
-<script>
-  const btn = document.getElementById('copyPromptBtn') as HTMLButtonElement | null;
-  if (btn) {
-    btn.addEventListener('click', async () => {
-      const text = btn.dataset.copy ?? '';
-      try {
-        await navigator.clipboard.writeText(text);
-        const original = btn.textContent;
-        btn.textContent = 'Copiado';
-        btn.classList.add('is-copied');
-        setTimeout(() => {
-          btn.textContent = original;
-          btn.classList.remove('is-copied');
-        }, 1800);
-      } catch (e) {
-        console.error('copy failed', e);
+<script is:inline>
+  (function () {
+    var btn = document.getElementById('copyPromptBtn');
+    if (btn) {
+      btn.addEventListener('click', function () {
+        var text = btn.dataset.copy || '';
+        var doneCopy = function () {
+          var original = btn.textContent;
+          btn.textContent = 'Copiado';
+          btn.classList.add('is-copied');
+          setTimeout(function () {
+            btn.textContent = original;
+            btn.classList.remove('is-copied');
+          }, 1800);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(doneCopy).catch(function (e) { console.error('copy failed', e); });
+        } else {
+          doneCopy();
+        }
+      });
+    }
+
+    var STORAGE_KEY = 'andres_recursos_subscribed';
+    var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    var content = document.getElementById('detailContent');
+    var gateInline = document.getElementById('gateInline');
+
+    function isSubscribed() {
+      try { return localStorage.getItem(STORAGE_KEY) === '1'; } catch (e) { return false; }
+    }
+
+    if (content && content.dataset.gated === 'true' && gateInline) {
+      if (isSubscribed()) {
+        gateInline.hidden = true;
+        content.style.display = '';
+      } else {
+        gateInline.hidden = false;
+        content.style.display = 'none';
       }
-    });
-  }
-
-  const STORAGE_KEY = 'andres_recursos_subscribed';
-  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  const content = document.getElementById('detailContent') as HTMLElement | null;
-  const gateInline = document.getElementById('gateInline') as HTMLElement | null;
-
-  function isSubscribed() {
-    try { return localStorage.getItem(STORAGE_KEY) === '1'; } catch { return false; }
-  }
-
-  if (content && content.dataset.gated === 'true' && gateInline) {
-    if (isSubscribed()) {
-      gateInline.hidden = true;
-      content.style.display = '';
-    } else {
-      gateInline.hidden = false;
-      content.style.display = 'none';
     }
-  }
 
-  const gateEmail = document.getElementById('gateInlineEmail') as HTMLInputElement | null;
-  const gateSubmit = document.getElementById('gateInlineSubmit') as HTMLButtonElement | null;
-  const gateError = document.getElementById('gateInlineError') as HTMLElement | null;
+    var gateEmail = document.getElementById('gateInlineEmail');
+    var gateSubmit = document.getElementById('gateInlineSubmit');
+    var gateError = document.getElementById('gateInlineError');
 
-  function submitInlineGate() {
-    if (!gateEmail || !gateError) return;
-    const email = gateEmail.value.trim();
-    if (!EMAIL_RE.test(email)) {
-      gateError.textContent = 'Ese correo no parece válido.';
-      gateError.hidden = false;
-      return;
+    function submitInlineGate() {
+      if (!gateEmail || !gateError) return;
+      var email = gateEmail.value.trim();
+      if (!EMAIL_RE.test(email)) {
+        gateError.textContent = 'Ese correo no parece válido.';
+        gateError.hidden = false;
+        return;
+      }
+      try {
+        localStorage.setItem(STORAGE_KEY, '1');
+        localStorage.setItem('andres_recursos_email', email);
+      } catch (e) {}
+      if (gateInline) gateInline.hidden = true;
+      if (content) content.style.display = '';
     }
-    try {
-      localStorage.setItem(STORAGE_KEY, '1');
-      localStorage.setItem('andres_recursos_email', email);
-    } catch {}
-    if (gateInline) gateInline.hidden = true;
-    if (content) content.style.display = '';
-  }
 
-  gateSubmit?.addEventListener('click', submitInlineGate);
-  gateEmail?.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitInlineGate(); });
+    if (gateSubmit) gateSubmit.addEventListener('click', submitInlineGate);
+    if (gateEmail) gateEmail.addEventListener('keydown', function (e) { if (e.key === 'Enter') submitInlineGate(); });
+  })();
 </script>

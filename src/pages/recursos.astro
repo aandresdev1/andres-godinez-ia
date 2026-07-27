@@ -1,0 +1,108 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ResourceCard from '../components/ResourceCard.astro';
+import { RESOURCES, CHIP_LIST } from '../data/resources.js';
+
+export const prerender = false;
+
+const sorted = [...RESOURCES].sort((a, b) => (a.date < b.date ? 1 : -1));
+const featured = sorted[0];
+const rest = sorted.slice(1);
+---
+<Layout
+  title="Recursos gratis · Andres Godinez"
+  description="Prompts, automatizaciones, guías y plantillas gratis para automatizar tu negocio con IA."
+  canonical="https://automatiza.aandresdev.com/recursos"
+>
+  <Header />
+  <main class="recursos-main">
+    <section class="recursos-hero">
+      <div class="eyebrow">RECURSOS GRATIS</div>
+      <h1>Todo lo que menciono <span class="accent">en mis videos</span></h1>
+      <p class="recursos-subtitle">
+        {RESOURCES.length} recursos gratis para automatizar tu negocio y crear mejor contenido.
+      </p>
+    </section>
+
+    <section class="recursos-chips">
+      <div class="chip-row" role="tablist" aria-label="Categorías">
+        {CHIP_LIST.map((cat, i) => (
+          <button
+            type="button"
+            class:list={['chip', { 'is-active': i === 0 }]}
+            data-chip={cat}
+            role="tab"
+            aria-selected={i === 0 ? 'true' : 'false'}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+    </section>
+
+    <section class="recursos-featured">
+      <ResourceCard resource={featured} featured />
+    </section>
+
+    <section class="recursos-grid-section">
+      <div class="recursos-grid">
+        {rest.map((r) => <ResourceCard resource={r} />)}
+      </div>
+      <div class="recursos-empty" hidden>
+        <div class="recursos-empty-title">Todavía no hay nada aquí</div>
+        <div class="recursos-empty-text">Pronto sumo recursos en esta categoría — vuelve a pasar.</div>
+      </div>
+    </section>
+
+    <section class="recursos-cta">
+      <div class="cta-box">
+        <div class="cta-glow" aria-hidden="true"></div>
+        <div class="recursos-cta-inner">
+          <div>
+            <h2>¿Tienes un negocio y quieres algo así?</h2>
+            <p class="lead">Hablemos de cómo automatizar tu operación con IA — sin compromiso.</p>
+          </div>
+          <a href="/#contacto" class="btn-primary btn-lg">Escríbeme →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  const chips = document.querySelectorAll<HTMLButtonElement>('.chip[data-chip]');
+  const cards = document.querySelectorAll<HTMLElement>('.recursos-grid .resource-card');
+  const featured = document.querySelector<HTMLElement>('.recursos-featured');
+  const empty = document.querySelector<HTMLElement>('.recursos-empty');
+  const grid = document.querySelector<HTMLElement>('.recursos-grid');
+
+  function applyFilter(cat: string) {
+    let visible = 0;
+    cards.forEach((c) => {
+      const match = cat === 'Todos' || c.dataset.category === cat;
+      c.style.display = match ? '' : 'none';
+      if (match) visible++;
+    });
+    if (featured) featured.style.display = cat === 'Todos' ? '' : 'none';
+    if (empty && grid) {
+      const showEmpty = cat !== 'Todos' && visible === 0;
+      empty.hidden = !showEmpty;
+      grid.style.display = showEmpty ? 'none' : '';
+    }
+  }
+
+  chips.forEach((chip) => {
+    chip.addEventListener('click', () => {
+      chips.forEach((c) => {
+        c.classList.remove('is-active');
+        c.setAttribute('aria-selected', 'false');
+      });
+      chip.classList.add('is-active');
+      chip.setAttribute('aria-selected', 'true');
+      applyFilter(chip.dataset.chip!);
+    });
+  });
+</script>

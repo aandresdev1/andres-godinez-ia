@@ -1,0 +1,48 @@
+---
+import { CATEGORY_META, formatDate } from '../data/resources.js';
+
+interface Props {
+  resource: {
+    slug: string;
+    title: string;
+    category: string;
+    delivery: 'prompt' | 'file' | 'guide' | 'link';
+    date: string;
+    description: string;
+  };
+  featured?: boolean;
+}
+
+const { resource, featured = false } = Astro.props;
+const meta = CATEGORY_META[resource.category] || { color: '#ccc', bg: 'rgba(255,255,255,0.08)' };
+---
+<a
+  href={`/${resource.slug}`}
+  class:list={['resource-card', { 'is-featured': featured }]}
+  data-category={resource.category}
+>
+  <div class="resource-card-top">
+    <span class="resource-icon" aria-hidden="true">
+      {resource.delivery === 'prompt' && (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+      )}
+      {resource.delivery === 'file' && (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="4" y1="21" x2="20" y2="21"></line></svg>
+      )}
+      {resource.delivery === 'guide' && (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+      )}
+      {resource.delivery === 'link' && (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+      )}
+    </span>
+    <span class="resource-cat-badge" style={`color:${meta.color}; background:${meta.bg};`}>{resource.category}</span>
+  </div>
+  {featured && <span class="resource-new-badge">Nuevo</span>}
+  <h3 class="resource-card-title">{resource.title}</h3>
+  <p class="resource-card-desc">{resource.description}</p>
+  <div class="resource-card-footer">
+    <span class="resource-card-date">{formatDate(resource.date)}</span>
+    <span class="resource-card-cta">Ver recurso →</span>
+  </div>
+</a>

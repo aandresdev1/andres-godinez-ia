@@ -1,0 +1,101 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { findResource, CATEGORY_META, formatDate } from '../data/resources.js';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+const resource = slug ? findResource(slug) : null;
+
+if (!resource) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const meta = CATEGORY_META[resource.category] || { color: '#ccc', bg: 'rgba(255,255,255,0.08)' };
+const canonical = `https://automatiza.aandresdev.com/${resource.slug}`;
+---
+<Layout
+  title={`${resource.title} · Andres Godinez`}
+  description={resource.description}
+  canonical={canonical}
+>
+  <Header />
+  <main class="recursos-main">
+    <a href="/recursos" class="detail-back">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      Volver a recursos
+    </a>
+
+    <section class="detail-head">
+      <span class="resource-cat-badge" style={`color:${meta.color}; background:${meta.bg};`}>{resource.category}</span>
+      <h1 class="detail-title">{resource.title}</h1>
+      <div class="detail-meta">
+        <span>{formatDate(resource.date)}</span>
+        {resource.tiktok && (
+          <a href={resource.tiktok} target="_blank" rel="noopener" class="detail-tiktok">Ver el video en TikTok →</a>
+        )}
+      </div>
+      <p class="detail-desc">{resource.description}</p>
+    </section>
+
+    <section class="detail-content">
+      {resource.delivery === 'prompt' && resource.content && (
+        <div class="detail-code">
+          <div class="detail-code-head">
+            <span class="detail-code-lang">prompt</span>
+            <button type="button" id="copyPromptBtn" class="detail-code-copy" data-copy={resource.content}>Copiar</button>
+          </div>
+          <pre class="detail-pre"><code>{resource.content}</code></pre>
+        </div>
+      )}
+
+      {resource.bodyParagraphs?.map((p) => <p class="detail-p">{p}</p>)}
+
+      {resource.contents && resource.contents.length > 0 && (
+        <>
+          <h3 class="detail-h3">Qué incluye</h3>
+          <ul class="detail-list">
+            {resource.contents.map((item) => <li>{item}</li>)}
+          </ul>
+        </>
+      )}
+    </section>
+
+    <section class="recursos-cta">
+      <div class="cta-box">
+        <div class="cta-glow" aria-hidden="true"></div>
+        <div class="recursos-cta-inner">
+          <div>
+            <h2>¿Tienes un negocio y quieres algo así?</h2>
+            <p class="lead">Hablemos de cómo automatizar tu operación con IA — sin compromiso.</p>
+          </div>
+          <a href="/#contacto" class="btn-primary btn-lg">Escríbeme →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  const btn = document.getElementById('copyPromptBtn') as HTMLButtonElement | null;
+  if (btn) {
+    btn.addEventListener('click', async () => {
+      const text = btn.dataset.copy ?? '';
+      try {
+        await navigator.clipboard.writeText(text);
+        const original = btn.textContent;
+        btn.textContent = 'Copiado';
+        btn.classList.add('is-copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('is-copied');
+        }, 1800);
+      } catch (e) {
+        console.error('copy failed', e);
+      }
+    });
+  }
+</script>

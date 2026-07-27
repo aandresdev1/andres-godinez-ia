@@ -1,0 +1,22 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+export const prerender = false;
+---
+<Layout title="Página no encontrada · Andres Godinez">
+  <Header />
+  <main class="recursos-main">
+    <section class="notfound">
+      <div class="eyebrow">404</div>
+      <h1>Nada por aquí</h1>
+      <p class="lead">La página que buscas no existe o cambió de dirección.</p>
+      <div class="notfound-cta">
+        <a href="/" class="btn-primary btn-lg">Ir al inicio</a>
+        <a href="/recursos" class="btn-secondary btn-lg">Ver recursos →</a>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>

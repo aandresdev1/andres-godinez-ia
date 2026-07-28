@@ -1,15 +1,23 @@
 ---
+import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import ResourceCard from '../components/ResourceCard.astro';
-import { RESOURCES, CHIP_LIST } from '../data/resources.js';
+import { CHIP_LIST } from '../data/resources.js';
 
 export const prerender = false;
 
-const sorted = [...RESOURCES].sort((a, b) => (a.date < b.date ? 1 : -1));
+const entries = await getCollection('resources');
+const sorted = entries
+  .map((e) => ({ slug: e.id, ...e.data }))
+  .sort((a, b) => (a.date < b.date ? 1 : -1));
 const featured = sorted[0];
 const rest = sorted.slice(1);
+const total = sorted.length;
+
+const usedCategories = new Set(sorted.map((r) => r.category));
+const visibleChips = CHIP_LIST.filter((c) => c === 'Todos' || usedCategories.has(c));
 ---
 <Layout
   title="Recursos gratis · Andres Godinez"
@@ -22,13 +30,13 @@ const rest = sorted.slice(1);
       <div class="eyebrow">RECURSOS GRATIS</div>
       <h1>Todo lo que menciono <span class="accent">en mis videos</span></h1>
       <p class="recursos-subtitle">
-        {RESOURCES.length} recursos gratis para automatizar tu negocio y crear mejor contenido.
+        {total} recursos gratis para automatizar tu negocio y crear mejor contenido.
       </p>
     </section>
 
     <section class="recursos-chips">
       <div class="chip-row" role="tablist" aria-label="Categorías">
-        {CHIP_LIST.map((cat, i) => (
+        {visibleChips.map((cat, i) => (
           <button
             type="button"
             class:list={['chip', { 'is-active': i === 0 }]}
@@ -46,15 +54,17 @@ const rest = sorted.slice(1);
       <ResourceCard resource={featured} featured />
     </section>
 
-    <section class="recursos-grid-section">
-      <div class="recursos-grid">
-        {rest.map((r) => <ResourceCard resource={r} />)}
-      </div>
-      <div class="recursos-empty" hidden>
-        <div class="recursos-empty-title">Todavía no hay nada aquí</div>
-        <div class="recursos-empty-text">Pronto sumo recursos en esta categoría — vuelve a pasar.</div>
-      </div>
-    </section>
+    {rest.length > 0 && (
+      <section class="recursos-grid-section">
+        <div class="recursos-grid">
+          {rest.map((r) => <ResourceCard resource={r} />)}
+        </div>
+        <div class="recursos-empty" hidden>
+          <div class="recursos-empty-title">Todavía no hay nada aquí</div>
+          <div class="recursos-empty-text">Pronto sumo recursos en esta categoría — vuelve a pasar.</div>
+        </div>
+      </section>
+    )}
 
     <section class="recursos-cta">
       <div class="cta-box">
@@ -78,20 +88,20 @@ const rest = sorted.slice(1);
       </button>
 
       <div id="gateForm">
-        <div class="gate-title" id="gateTitle">Este recurso llega por correo</div>
-        <div class="gate-tone">Te lo mando al correo. De paso te llegan los recursos nuevos, y te puedes salir cuando quieras.</div>
-        <div class="gate-notice">Llega a tu bandeja de entrada, no se descarga aquí.</div>
+        <div class="gate-eyebrow">CONTENIDO EXCLUSIVO</div>
+        <div class="gate-title" id="gateTitle">Suscríbete para ver este material</div>
+        <div class="gate-tone">Es necesario que te suscribas al newsletter para ver este material.</div>
         <input type="email" id="gateEmail" placeholder="tu@correo.com" class="gate-input" autocomplete="email">
         <div class="gate-error" id="gateError" hidden></div>
-        <button type="button" id="gateSubmit" class="btn-primary btn-block">Enviármelo</button>
-        <div class="gate-fine">Sin spam. Un correo por semana como máximo.</div>
+        <button type="button" id="gateSubmit" class="btn-primary btn-block">Suscribirme al newsletter</button>
+        <div class="gate-fine">Sin spam. Cancela cuando quieras.</div>
       </div>
 
       <div id="gateSuccess" hidden>
         <div class="gate-success-icon">✓</div>
-        <div class="gate-success-title">Listo, revisa tu correo</div>
-        <div class="gate-success-text">También desbloqueaste el resto de recursos con registro.</div>
-        <button type="button" id="gateDone" class="btn-primary btn-block">Continuar al recurso</button>
+        <div class="gate-success-title">¡Listo, ya estás suscrito!</div>
+        <div class="gate-success-text">Ya tienes acceso a todos los recursos exclusivos.</div>
+        <button type="button" id="gateDone" class="btn-primary btn-block">Ver el recurso</button>
       </div>
     </div>
   </div>
@@ -160,7 +170,7 @@ const rest = sorted.slice(1);
     function openGate(slug, title) {
       if (!overlay || !formPane || !successPane || !titleEl) return;
       pendingSlug = slug;
-      titleEl.textContent = title || 'Este recurso llega por correo';
+      titleEl.textContent = title || 'Suscríbete para ver este material';
       formPane.hidden = false;
       successPane.hidden = true;
       if (emailInput) emailInput.value = '';

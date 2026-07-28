@@ -1,20 +1,23 @@
 ---
+import { getEntry, render } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { findResource, CATEGORY_META, formatDate } from '../data/resources.js';
+import { CATEGORY_META, formatDate } from '../data/resources.js';
 
 export const prerender = false;
 
 const { slug } = Astro.params;
-const resource = slug ? findResource(slug) : null;
+const entry = slug ? await getEntry('resources', slug) : null;
 
-if (!resource) {
+if (!entry) {
   return new Response(null, { status: 404, statusText: 'Not Found' });
 }
 
+const resource = entry.data;
+const { Content } = await render(entry);
 const meta = CATEGORY_META[resource.category] || { color: '#ccc', bg: 'rgba(255,255,255,0.08)' };
-const canonical = `https://automatiza.aandresdev.com/${resource.slug}`;
+const canonical = `https://automatiza.aandresdev.com/${entry.id}`;
 ---
 <Layout
   title={`${resource.title} · Andres Godinez`}
@@ -45,14 +48,15 @@ const canonical = `https://automatiza.aandresdev.com/${resource.slug}`;
         <div class="gate-inline-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="1.5"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
         </div>
-        <div class="gate-inline-title">Este recurso llega por correo</div>
-        <div class="gate-inline-text">Te lo mando al correo. De paso te llegan los recursos nuevos, y te puedes salir cuando quieras.</div>
+        <div class="gate-inline-eyebrow">CONTENIDO EXCLUSIVO</div>
+        <div class="gate-inline-title">Suscríbete para ver este material</div>
+        <div class="gate-inline-text">Es necesario que te suscribas al newsletter para desbloquear este recurso.</div>
         <div class="gate-inline-form">
           <input type="email" id="gateInlineEmail" placeholder="tu@correo.com" class="gate-input" autocomplete="email">
-          <button type="button" id="gateInlineSubmit" class="btn-primary">Enviármelo</button>
+          <button type="button" id="gateInlineSubmit" class="btn-primary">Suscribirme</button>
         </div>
         <div class="gate-inline-error" id="gateInlineError" hidden></div>
-        <div class="gate-inline-fine">Sin spam. Un correo por semana como máximo.</div>
+        <div class="gate-inline-fine">Sin spam. Cancela cuando quieras.</div>
       </section>
     )}
 
@@ -67,7 +71,9 @@ const canonical = `https://automatiza.aandresdev.com/${resource.slug}`;
         </div>
       )}
 
-      {resource.bodyParagraphs?.map((p) => <p class="detail-p">{p}</p>)}
+      <div class="detail-md">
+        <Content />
+      </div>
 
       {resource.contents && resource.contents.length > 0 && (
         <>

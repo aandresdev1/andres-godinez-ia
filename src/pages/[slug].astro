@@ -44,7 +44,7 @@ const canonical = `https://automatiza.aandresdev.com/${entry.id}`;
     </section>
 
     {resource.gated && (
-      <section class="gate-inline" id="gateInline" hidden>
+      <section class="gate-inline" id="gateInline" data-slug={entry.id} hidden>
         <div class="gate-inline-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="1.5"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
         </div>
@@ -126,6 +126,18 @@ const canonical = `https://automatiza.aandresdev.com/${entry.id}`;
 
     var STORAGE_KEY = 'andres_recursos_subscribed';
     var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    var NEWSLETTER_WEBHOOK = 'https://primary-production-b62f1.up.railway.app/webhook/newsletter-notion';
+
+    function postSubscription(email, slug) {
+      try {
+        fetch(NEWSLETTER_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, slug: slug || '' }),
+          keepalive: true
+        }).catch(function () {});
+      } catch (e) {}
+    }
 
     var content = document.getElementById('detailContent');
     var gateInline = document.getElementById('gateInline');
@@ -160,6 +172,7 @@ const canonical = `https://automatiza.aandresdev.com/${entry.id}`;
         localStorage.setItem(STORAGE_KEY, '1');
         localStorage.setItem('andres_recursos_email', email);
       } catch (e) {}
+      postSubscription(email, (gateInline && gateInline.dataset.slug) || '');
       if (gateInline) gateInline.hidden = true;
       if (content) content.style.display = '';
     }

@@ -144,6 +144,18 @@ const visibleChips = CHIP_LIST.filter((c) => c === 'Todos' || usedCategories.has
 
     var STORAGE_KEY = 'andres_recursos_subscribed';
     var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    var NEWSLETTER_WEBHOOK = 'https://primary-production-b62f1.up.railway.app/webhook/newsletter-notion';
+
+    function postSubscription(email, slug) {
+      try {
+        fetch(NEWSLETTER_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, slug: slug || '' }),
+          keepalive: true
+        }).catch(function () {});
+      } catch (e) {}
+    }
 
     var overlay = document.getElementById('gateOverlay');
     var closeBtn = document.getElementById('gateClose');
@@ -197,6 +209,7 @@ const visibleChips = CHIP_LIST.filter((c) => c === 'Todos' || usedCategories.has
       }
       errorEl.hidden = true;
       markSubscribed(email);
+      postSubscription(email, pendingSlug);
       formPane.hidden = true;
       successPane.hidden = false;
     }
